@@ -2293,6 +2293,7 @@
                 try {
                     events = JSON.parse(stored);
                     renderCalendar();
+                    if (typeof renderServices === 'function') renderServices();
                 } catch (e) {
                     console.error("Local data corrupted", e);
                 }
@@ -2310,6 +2311,7 @@
                         // Update local backup
                         localStorage.setItem('mcgiEvents', JSON.stringify(events));
                         renderCalendar();
+                        if (typeof renderServices === 'function') renderServices();
                     }
                 }, (error) => {
                     console.warn("Cloud Sync Error (Offline Mode):", error.message);
