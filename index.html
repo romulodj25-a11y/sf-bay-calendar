@@ -1194,36 +1194,42 @@
         .days:hover::-webkit-scrollbar-thumb {
             background-color: rgba(0, 0, 0, 0.2);
         }
-    </style>
-    .team-page-container {
-    padding: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-    }
 
-    .team-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Force 3 columns */
-    gap: 20px;
-    align-items: start;
-    }
+        .team-page-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
-    @media (max-width: 768px) {
-    .team-page-container {
-    padding: 20px 15px; /* Reduced for mobile */
-    }
-    .team-grid {
-    grid-template-columns: 1fr; /* Stack vertically on mobile */
-    }
-    .team-card {
-    /* Ensure card creates new stacking context and fits */
-    width: 100%;
-    }
-    /* Optional: Center member text on mobile if alignment looks off */
-    .member {
-    text-align: center;
-    }
-    }
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            /* Force 3 columns */
+            gap: 20px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .team-page-container {
+                padding: 20px 15px;
+                /* Reduced for mobile */
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+                /* Stack vertically on mobile */
+            }
+
+            .team-card {
+                /* Ensure card creates new stacking context and fits */
+                width: 100%;
+            }
+
+            /* Optional: Center member text on mobile if alignment looks off */
+            .member {
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
