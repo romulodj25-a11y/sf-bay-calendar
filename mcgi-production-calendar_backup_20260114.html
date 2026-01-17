@@ -1,0 +1,2393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCGI Production Team</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0c4a6e 100%);
+            min-height: 100vh;
+            padding: 5px;
+            /* REDUCED from 10px */
+            overflow: hidden;
+            /* Prevent body scroll */
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            /* Themed Gradient: Pale Blue to Pale Gold */
+            background: linear-gradient(135deg, rgba(239, 246, 255, 0.95) 0%, rgba(255, 251, 235, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            /* Glass effect from body */
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 12px;
+            /* REDUCED */
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            height: 98vh;
+            /* Force container to fit */
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #0369a1 100%);
+            color: white;
+            padding: 10px 20px;
+            /* REDUCED from 20px 30px */
+            text-align: center;
+            border-bottom: 3px solid #fbbf24;
+            /* REDUCED border */
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+            /* REDUCED from 2em */
+            margin-bottom: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 0.9em;
+            /* REDUCED */
+        }
+
+        .page {
+            display: none;
+            animation: fadeOut 0.3s ease-out;
+            flex-grow: 1;
+            /* Allow to fill remaining space */
+            overflow-y: auto;
+            /* Scroll inside page if needed, but we aim to fit */
+            height: 100%;
+        }
+
+        .page.active {
+            display: flex;
+            /* Changed to flex to control children */
+            flex-direction: column;
+            animation: fadeInSlide 0.5s ease-out;
+        }
+
+        #teamPage.active {
+            display: block !important;
+            /* Restore normal flow for Team page layout */
+        }
+
+        @keyframes fadeInSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            /* REDUCED from 15px */
+            padding: 8px;
+            /* REDUCED from 12px */
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #e5e7eb;
+            padding: 5px 15px;
+            /* REDUCED */
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            /* REDUCED */
+            font-weight: bold;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-btn.active {
+            background: #1e40af;
+            color: white;
+            border: 2px solid #fbbf24;
+            transform: scale(1.05);
+        }
+
+        .nav-btn:hover {
+            background: #fbbf24;
+            color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            /* REDUCED */
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        #calendarDays {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .month-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .calendar-type-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background: white;
+            color: #1e40af;
+            border: 2px solid #1e40af;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active {
+            background: #1e40af;
+            color: white;
+            border-color: #fbbf24;
+        }
+
+        .toggle-btn:hover {
+            background: #fbbf24;
+            color: #1e40af;
+            border-color: #fbbf24;
+        }
+
+        .month-nav button {
+            background: white;
+            color: #1e40af;
+            border: 2px solid #fbbf24;
+            padding: 5px 10px;
+            /* REDUCED */
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            /* REDUCED */
+            transition: all 0.3s;
+            min-width: 35px;
+            /* REDUCED */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .month-nav button:hover {
+            background: #fbbf24;
+            color: #1e40af;
+            transform: scale(1.1);
+        }
+
+        .current-month {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            min-width: 160px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .month-flipper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .month-text {
+            position: absolute;
+            width: 100%;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .month-text.slide-out-left {
+            animation: slideOutLeft 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .month-text.slide-out-right {
+            animation: slideOutRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .month-text.slide-in-left {
+            animation: slideInLeft 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        .month-text.slide-in-right {
+            animation: slideInRight 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        @keyframes slideOutLeft {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+                filter: blur(0px);
+            }
+
+            100% {
+                transform: translateY(50px);
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
+
+        @keyframes slideOutRight {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+                filter: blur(0px);
+            }
+
+            100% {
+                transform: translateY(50px);
+                opacity: 0;
+                filter: blur(10px);
+            }
+        }
+
+        @keyframes slideInLeft {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+                filter: blur(10px);
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes slideInRight {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+                filter: blur(10px);
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+                filter: blur(0px);
+            }
+        }
+
+        .add-event-btn {
+            background: #fbbf24;
+            color: #1e40af;
+            border: 2px solid #f59e0b;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .add-event-btn:hover {
+            background: #f59e0b;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .calendar {
+            padding: 10px;
+            /* REDUCED from 20px */
+            animation: slideInFromBottom 0.6s ease-out 0.2s both;
+            flex-grow: 1;
+            /* Allow it to take space */
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideInFromBottom {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: bold;
+            color: #1e40af;
+            padding: 8px;
+            font-size: 0.85em;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 8px;
+            opacity: 0;
+            animation: fadeInWeekday 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInWeekday {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .weekday:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .weekday:nth-child(2) {
+            animation-delay: 0.10s;
+        }
+
+        .weekday:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .weekday:nth-child(4) {
+            animation-delay: 0.20s;
+        }
+
+        .weekday:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .weekday:nth-child(6) {
+            animation-delay: 0.30s;
+        }
+
+        .weekday:nth-child(7) {
+            animation-delay: 0.35s;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            /* REDUCED from 8px */
+            transition: opacity 0.3s ease-out;
+            flex-grow: 1;
+            /* Stretch to fill */
+        }
+
+        .days.transitioning {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .day {
+            /* aspect-ratio removed to allow rectangular shape */
+            min-height: 60px;
+            height: auto;
+            border: 2px solid rgba(251, 191, 36, 0.7);
+            /* Thicker, more visible gold */
+            /* Subtle gold border */
+            border-radius: 8px;
+            /* Softer corners */
+            padding: 6px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.65);
+            /* More translucent */
+            backdrop-filter: blur(12px);
+            /* Stronger frost */
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            opacity: 0;
+            animation: fadeInBox 0.4s ease-out forwards;
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            /* Professional smooth ease */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        @keyframes fadeInBox {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .day:nth-child(1) {
+            animation-delay: 0.02s;
+        }
+
+        .day:nth-child(2) {
+            animation-delay: 0.04s;
+        }
+
+        .day:nth-child(3) {
+            animation-delay: 0.06s;
+        }
+
+        .day:nth-child(4) {
+            animation-delay: 0.08s;
+        }
+
+        .day:nth-child(5) {
+            animation-delay: 0.10s;
+        }
+
+        .day:nth-child(6) {
+            animation-delay: 0.12s;
+        }
+
+        .day:nth-child(7) {
+            animation-delay: 0.14s;
+        }
+
+        .day:nth-child(8) {
+            animation-delay: 0.16s;
+        }
+
+        .day:nth-child(9) {
+            animation-delay: 0.18s;
+        }
+
+        .day:nth-child(10) {
+            animation-delay: 0.20s;
+        }
+
+        .day:nth-child(11) {
+            animation-delay: 0.22s;
+        }
+
+        .day:nth-child(12) {
+            animation-delay: 0.24s;
+        }
+
+        .day:nth-child(13) {
+            animation-delay: 0.26s;
+        }
+
+        .day:nth-child(14) {
+            animation-delay: 0.28s;
+        }
+
+        .day:nth-child(15) {
+            animation-delay: 0.30s;
+        }
+
+        .day:nth-child(16) {
+            animation-delay: 0.32s;
+        }
+
+        .day:nth-child(17) {
+            animation-delay: 0.34s;
+        }
+
+        .day:nth-child(18) {
+            animation-delay: 0.36s;
+        }
+
+        .day:nth-child(19) {
+            animation-delay: 0.38s;
+        }
+
+        .day:nth-child(20) {
+            animation-delay: 0.40s;
+        }
+
+        .day:nth-child(21) {
+            animation-delay: 0.42s;
+        }
+
+        .day:nth-child(22) {
+            animation-delay: 0.44s;
+        }
+
+        .day:nth-child(23) {
+            animation-delay: 0.46s;
+        }
+
+        .day:nth-child(24) {
+            animation-delay: 0.48s;
+        }
+
+        .day:nth-child(25) {
+            animation-delay: 0.50s;
+        }
+
+        .day:nth-child(26) {
+            animation-delay: 0.52s;
+        }
+
+        .day:nth-child(27) {
+            animation-delay: 0.54s;
+        }
+
+        .day:nth-child(28) {
+            animation-delay: 0.56s;
+        }
+
+        .day:nth-child(29) {
+            animation-delay: 0.58s;
+        }
+
+        .day:nth-child(30) {
+            animation-delay: 0.60s;
+        }
+
+        .day:nth-child(31) {
+            animation-delay: 0.62s;
+        }
+
+        .day:nth-child(32) {
+            animation-delay: 0.64s;
+        }
+
+        .day:nth-child(33) {
+            animation-delay: 0.66s;
+        }
+
+        .day:nth-child(34) {
+            animation-delay: 0.68s;
+        }
+
+        .day:nth-child(35) {
+            animation-delay: 0.70s;
+        }
+
+        .day:nth-child(36) {
+            animation-delay: 0.72s;
+        }
+
+        .day:nth-child(37) {
+            animation-delay: 0.74s;
+        }
+
+        .day:nth-child(38) {
+            animation-delay: 0.76s;
+        }
+
+        .day:nth-child(39) {
+            animation-delay: 0.78s;
+        }
+
+        .day:nth-child(40) {
+            animation-delay: 0.80s;
+        }
+
+        .day:nth-child(41) {
+            animation-delay: 0.82s;
+        }
+
+        .day:nth-child(42) {
+            animation-delay: 0.84s;
+        }
+
+        .day:hover {
+            border: 2px solid #fbbf24 !important;
+            /* Solid vivid gold on hover */
+            transform: translateY(-4px) scale(1.02) !important;
+            /* Subtle lift */
+            box-shadow:
+                0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                0 10px 10px -5px rgba(0, 0, 0, 0.04),
+                0 0 15px rgba(251, 191, 36, 0.3);
+            /* Soft gold glow */
+            z-index: 10;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(254, 243, 199, 0.9));
+            /* Subtle warm tint */
+        }
+
+        .day.other-month {
+            opacity: 0.3;
+            pointer-events: none;
+            background: white;
+            color: #333;
+            border-color: #e5e7eb;
+        }
+
+        .day.other-month:hover {
+            border-color: #e9ecef !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .day.other-month::after {
+            display: none;
+        }
+
+        .day.today {
+            background: linear-gradient(135deg, #1e40af 0%, #0369a1 100%);
+            color: white;
+            border-color: #fbbf24;
+            border-width: 3px;
+        }
+
+        .day.today .day-number {
+            color: white;
+        }
+
+        .day.today .event-badge {
+            background: rgba(251, 191, 36, 0.9);
+            color: #1e40af;
+        }
+
+        .day-number {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .holiday-marker {
+            font-size: 0.65em;
+            color: #dc3545;
+            font-weight: bold;
+            margin-top: 2px;
+            line-height: 1.1;
+        }
+
+        .spbb-marker {
+            font-size: 0.65em;
+            color: #92400e;
+            font-weight: bold;
+            margin-top: 2px;
+            line-height: 1.1;
+        }
+
+        .spbb-day {
+            animation: spbbPulse 4s ease-in-out infinite;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+            border: 3px solid #fbbf24 !important;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+        }
+
+        @keyframes spbbPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+                transform: scale(1);
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(251, 191, 36, 0.8);
+                transform: scale(1.05);
+            }
+        }
+
+        .event-badge {
+            font-size: 0.65em;
+            background: #1e40af;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+            margin-top: 2px;
+            font-weight: bold;
+            line-height: 1.2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .event-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 4px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .services-container {
+            padding: 20px;
+            /* DRASTICALLY REDUCED from 80px 50px */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            /* REDUCED */
+            height: 100%;
+            /* Fill available space */
+            overflow-y: auto;
+        }
+
+        .service-row {
+            display: flex;
+            gap: 15px;
+            /* REDUCED */
+            justify-content: center;
+            animation: fadeInUp 0.6s ease-out both;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .service-row:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .service-row:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .service-row:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .service-row:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .service-card {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1e40af;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            /* Pill shape */
+            cursor: pointer;
+            font-size: 1.1em;
+            /* Increased size */
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            width: 320px;
+            /* Wider */
+            height: 60px;
+            /* Taller */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3), 0 2px 4px -1px rgba(245, 158, 11, 0.15);
+        }
+
+        .service-card:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.4), 0 4px 6px -2px rgba(245, 158, 11, 0.2);
+            filter: brightness(1.05);
+            color: #1e3a8a;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideInModal 0.4s ease-out;
+        }
+
+        @keyframes slideInModal {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #fbbf24;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .btn-primary {
+            background: #1e40af;
+            color: white;
+            border: 2px solid #fbbf24;
+        }
+
+        .btn-primary:hover {
+            background: #1e3a8a;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .event-item {
+            background: #eff6ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #fbbf24;
+        }
+
+        .event-item h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .event-item p {
+            color: #666;
+            font-size: 0.9em;
+            margin: 3px 0;
+        }
+
+        .event-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .type-service {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .type-rehearsal {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .type-meeting {
+            background: #eff6ff;
+            color: #1e3a8a;
+        }
+
+        .type-training {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .type-other {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .team-card {
+            background: white;
+            border: 3px solid #1e40af;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: scaleIn 0.5s ease-out both;
+        }
+
+        .team-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .team-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .team-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes scaleIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(30, 64, 175, 0.2);
+        }
+
+        .team-header {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #1e40af;
+            font-size: 1.3em;
+            font-weight: bold;
+            padding: 12px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .coordinator {
+            background: #eff6ff;
+            color: #1e40af;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1em;
+            border-left: 4px solid #fbbf24;
+        }
+
+        .coordinator::before {
+            content: '👤 COORDINATOR: ';
+            color: #0369a1;
+            font-size: 0.85em;
+        }
+
+        .members-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .member {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 6px;
+            color: #333;
+            border-left: 3px solid #fbbf24;
+            transition: all 0.2s;
+        }
+
+        .member:hover {
+            background: #fef3c7;
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="pageTitle">MCGI Production</h1>
+            <p>SF Bay Area Calendar</p>
+        </div>
+
+        <div id="calendarPage" class="page active">
+            <div class="nav-buttons">
+                <button class="nav-btn active" id="calendarNavBtn" onclick="showCalendar()">Calendar</button>
+                <button class="nav-btn" id="servicesNavBtn" onclick="showServices()">Services</button>
+                <button class="nav-btn" id="teamNavBtn" onclick="showTeam()">Team</button>
+            </div>
+
+            <div class="calendar-controls">
+                <div class="month-nav">
+                    <button onclick="prevMonth()">←</button>
+                    <div class="current-month">
+                        <div class="month-text" id="currentMonth"></div>
+                    </div>
+                    <button onclick="nextMonth()">→</button>
+                    <!-- Repositioned Toggles based on user request -->
+                    <div class="calendar-type-toggle" style="margin-left: 15px; display: flex; gap: 5px;">
+                        <button class="toggle-btn active" id="romanBtn" onclick="switchToRoman()">Gregorian</button>
+                        <button class="toggle-btn" id="hebrewBtn" onclick="switchToHebrew()">Hebrew</button>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="add-event-btn" onclick="openAddEvent()">+ Add Event</button>
+                </div>
+            </div>
+
+            <div class="calendar">
+                <div class="weekdays">
+                    <div class="weekday">Sun</div>
+                    <div class="weekday">Mon</div>
+                    <div class="weekday">Tue</div>
+                    <div class="weekday">Wed</div>
+                    <div class="weekday">Thu</div>
+                    <div class="weekday">Fri</div>
+                    <div class="weekday">Sat</div>
+                </div>
+                <div class="days" id="calendarDays"></div>
+            </div>
+        </div>
+
+        <div id="servicesPage" class="page">
+            <div class="nav-buttons">
+                <button class="nav-btn" id="calendarNavBtn2" onclick="showCalendar()">Calendar</button>
+                <button class="nav-btn active" id="servicesNavBtn2" onclick="showServices()">Services</button>
+                <button class="nav-btn" id="teamNavBtn2" onclick="showTeam()">Team</button>
+            </div>
+
+            <!-- Services List View -->
+            <div id="servicesList" class="services-container">
+                <!-- Content generated by JS -->
+            </div>
+
+            <!-- Service Details View -->
+            <div id="serviceDetails" class="services-container"
+                style="display: none; animation: fadeInSlide 0.3s ease-out; align-items: stretch;">
+
+                <!-- Back Header -->
+                <div
+                    style="width: 100%; display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px; flex-shrink: 0;">
+                    <button onclick="backToServices()"
+                        style="background: none; border: none; color: #1e40af; font-size: 1.2em; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: bold;">
+                        ← Back
+                    </button>
+                    <h2 id="selectedServiceTitle"
+                        style="flex: 1; text-align: center; color: #1e3a8a; margin: 0; padding-right: 60px;">Service
+                        Name</h2>
+                </div>
+
+                <!-- Main Content Split -->
+                <div
+                    style="display: flex; flex-wrap: wrap; width: 100%; gap: 30px; align-items: flex-start; flex: 1; overflow-y: auto;">
+
+                    <!-- Left Column: Options -->
+                    <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; align-items: center;">
+                        <h4
+                            style="color: #64748b; margin-bottom: 15px; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px;">
+                            Select Option</h4>
+                        <div id="serviceOptionsGrid"
+                            style="display: flex; flex-direction: column; gap: 10px; width: 100%; align-items: center;">
+                            <!-- Options generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Personnel Area -->
+                    <div id="personnelAssignmentArea"
+                        style="flex: 1.5; min-width: 320px; background: rgba(255,255,255,0.8); padding: 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); display: none; height: 100%;">
+                        <h3 id="assignmentHeader" style="color: #1e40af; text-align: center; margin-top: 0;">Assigned
+                            Personnel</h3>
+                        <p style="text-align: center; color: #666;">(Select an option to view schedule)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="teamPage" class="page">
+            <div class="nav-buttons">
+                <button class="nav-btn" id="calendarNavBtn3" onclick="showCalendar()">Calendar</button>
+                <button class="nav-btn" id="servicesNavBtn3" onclick="showServices()">Services</button>
+                <button class="nav-btn active" id="teamNavBtn3" onclick="showTeam()">Team</button>
+            </div>
+
+            <div style="padding: 20px 40px 40px 40px; max-width: 1200px; margin: 0 auto;">
+                <div
+                    style="background: linear-gradient(135deg, #1e40af 0%, #0369a1 100%); padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: center;">
+                    <h3 style="color: white; margin-bottom: 5px;">SF BAY AREA COORDINATOR</h3>
+                    <p style="color: #fbbf24; font-size: 1.3em; font-weight: bold;">Bro. Peter Bongato</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;">
+                    <div class="team-card">
+                        <div class="team-header">SF EAST</div>
+                        <div class="coordinator">Bro. Dalbert Lopez</div>
+                        <div class="members-list">
+                            <div class="member">Bro. Dave Lopez</div>
+                            <div class="member">Bro. Arthur King</div>
+                            <div class="member">Bro. Julius Palma</div>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-header">SF SOUTH</div>
+                        <div class="coordinator">Bro. Romy Umipig</div>
+                        <div class="members-list">
+                            <div class="member">Bro. Jeffrey Policarpio</div>
+                            <div class="member">Bro. Germelson Ramos</div>
+                            <div class="member">Bro. Emil Morales</div>
+                            <div class="member">Bro. EJ Josef</div>
+                            <div class="member">Sis. Maricel Peñalosa</div>
+                        </div>
+                    </div>
+
+                    <div class="team-card">
+                        <div class="team-header">SF NORTH</div>
+                        <div class="coordinator">Bro. Edmond Bautista</div>
+                        <div class="members-list">
+                            <div class="member">Bro. Edward Ricafort</div>
+                            <div class="member">Bro. Daniel Encarnacion</div>
+                            <div class="member">Sis. Cecilia Cristobal</div>
+                            <div class="member">Bro. Arnel Aldana</div>
+                            <div class="member">Bro. Renato Reg</div>
+                            <div class="member">Bro. Joel Salgado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Event</h2>
+                <button class="close-btn" onclick="closeEvent()">&times;</button>
+            </div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label>Service</label>
+                    <select id="eventTitle" required onchange="updateCategoryOptions()">
+                        <option value="">Select a service...</option>
+                        <option value="Thanksgiving">Thanksgiving</option>
+                        <option value="Prayer Meeting">Prayer Meeting</option>
+                        <option value="Worship Service">Worship Service</option>
+                        <option value="SPBB">SPBB</option>
+                        <option value="Serbisyong Kapatiran">Serbisyong Kapatiran</option>
+                        <option value="Mass Indoctrination">Mass Indoctrination</option>
+                        <option value="Lord's Supper">Lord's Supper</option>
+                        <option value="Christian New Year">Christian New Year</option>
+                        <option value="Fiesta ng Dios">Fiesta ng Dios</option>
+                        <option value="Locale Event">Locale Event</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Category / Option</label>
+                    <select id="eventCategory" required>
+                        <option value="">Select option...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Time</label>
+                    <input type="time" id="eventTime" required>
+                </div>
+                <div class="form-group">
+                    <label>Locale</label>
+                    <select id="eventType" required onchange="filterOperators()">
+                        <option value="">Select locale...</option>
+                        <option value="SF Bay Area (All)">SF Bay Area (All)</option>
+                        <option value="SF East">SF East</option>
+                        <option value="SF South">SF South</option>
+                        <option value="SF North">SF North</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Operators</label>
+                    <div id="operatorsDropdown"
+                        style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; border: 2px solid #e9ecef; border-radius: 8px; padding: 12px;">
+                        <p style="text-align: center; color: #999;">Please select a locale first</p>
+                    </div>
+                    <div id="selectedOperatorsBox"
+                        style="display: none; border: 2px solid #1e40af; border-radius: 8px; padding: 12px; margin-top: 10px; background: #eff6ff;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <strong style="color: #1e40af;">Selected Operators:</strong>
+                            <button type="button" onclick="showOperatorsDropdown()"
+                                style="background: #fbbf24; color: #1e40af; border: none; padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85em; font-weight: bold;">+
+                                Add/Remove</button>
+                        </div>
+                        <div id="selectedOperatorsList" style="display: flex; flex-direction: column; gap: 5px;"></div>
+                    </div>
+                    <small style="color: #666; display: block; margin-top: 5px;">Select one or more operators</small>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="eventNotes"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="saveEvent()">Save Event</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeEvent()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="viewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Events</h2>
+                <button class="close-btn" onclick="closeView()">&times;</button>
+            </div>
+            <div id="eventList"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteConfirmModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2 style="color: #dc3545;">Confirm Delete</h2>
+                <button class="close-btn" onclick="closeDeleteConfirm()">&times;</button>
+            </div>
+            <div style="padding: 20px 0;">
+                <p style="font-size: 1.1em; color: #333; text-align: center;">Are you sure you want to delete this
+                    event?</p>
+                <p style="font-size: 0.9em; color: #666; text-align: center; margin-top: 10px;">This action cannot be
+                    undone.</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-danger" onclick="confirmDelete()">Yes, Delete</button>
+                <button class="btn btn-secondary" onclick="closeDeleteConfirm()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+        let events = {};
+        let editingId = null;
+        let calendarType = 'gregorian';
+        let deleteTarget = null; // Store the event to be deleted
+
+        // Global Configuration
+        const servicesConfig = [
+            { name: "Thanksgiving", type: "standard", options: ["Live", "Playback"] },
+            { name: "Prayer Meeting", type: "standard", options: ["Live", "Playback"] },
+            { name: "Worship Service", type: "standard", options: ["Live", "Playback"] },
+            { name: "SPBB", type: "multi", options: ["1st Day", "2nd Day", "3rd Day", "Playback"] },
+            { name: "Serbisyong Kapatiran", type: "multi", options: ["Morning", "Evening"] },
+            { name: "Mass Indoctrination", type: "multi", options: ["Morning", "Others"] },
+            { name: "Lord's Supper", type: "standard", options: ["Live", "Playback"] },
+            { name: "Christian New Year", type: "standard", options: ["Live", "Playback"] },
+            { name: "Fiesta ng Dios", type: "special", options: ["Main", "Playback Files", "Lyrics", "Camera", "Audioman", "Others"] },
+            { name: "Locale Event", type: "special", options: ["Main", "Playback Files", "Lyrics", "Camera", "Audioman", "Others"] }
+        ];
+
+        const holidays = {
+            '2026-04-03': { name: '1st Qtr SPBB', country: 'MCGI' },
+            '2026-04-04': { name: '1st Qtr SPBB', country: 'MCGI' },
+            '2026-04-05': { name: '1st Qtr SPBB', country: 'MCGI' },
+            '2026-06-26': { name: '2nd Qtr SPBB', country: 'MCGI' },
+            '2026-06-27': { name: '2nd Qtr SPBB', country: 'MCGI' },
+            '2026-06-28': { name: '2nd Qtr SPBB', country: 'MCGI' },
+            '2026-10-09': { name: '3rd Qtr SPBB', country: 'MCGI' },
+            '2026-10-10': { name: '3rd Qtr SPBB', country: 'MCGI' },
+            '2026-10-11': { name: '3rd Qtr SPBB', country: 'MCGI' },
+            '2026-12-18': { name: '4th Qtr SPBB', country: 'MCGI' },
+            '2026-12-19': { name: '4th Qtr SPBB', country: 'MCGI' },
+            '2026-12-20': { name: '4th Qtr SPBB', country: 'MCGI' },
+            '2025-01-01': { name: "New Year's Day", country: 'US' },
+            '2025-11-27': { name: 'Thanksgiving', country: 'US' },
+            '2025-12-25': { name: 'Christmas Day', country: 'US' }
+        };
+
+        const hebrewMonths = [
+            'Tishrei', 'Cheshvan', 'Kislev', 'Tevet', 'Shevat', 'Adar',
+            'Nisan', 'Iyar', 'Sivan', 'Tammuz', 'Av', 'Elul'
+        ];
+
+        const teamData = {
+            'SF Bay Area (All)': [
+                { value: 'Bro. Peter Bongato', label: 'Bro. Peter Bongato (SF Bay Area Coordinator)' },
+                { value: 'Bro. Dalbert Lopez', label: 'Bro. Dalbert Lopez (SF East Coordinator)' },
+                { value: 'Bro. Dave Lopez', label: 'Bro. Dave Lopez' },
+                { value: 'Bro. Arthur King', label: 'Bro. Arthur King' },
+                { value: 'Bro. Julius Palma', label: 'Bro. Julius Palma' },
+                { value: 'Bro. Romy Umipig', label: 'Bro. Romy Umipig (SF South Coordinator)' },
+                { value: 'Bro. Jeffrey Policarpio', label: 'Bro. Jeffrey Policarpio' },
+                { value: 'Bro. Germelson Ramos', label: 'Bro. Germelson Ramos' },
+                { value: 'Bro. Emil Morales', label: 'Bro. Emil Morales' },
+                { value: 'Bro. EJ Josef', label: 'Bro. EJ Josef' },
+                { value: 'Sis. Maricel Peñalosa', label: 'Sis. Maricel Peñalosa' },
+                { value: 'Bro. Edmond Bautista', label: 'Bro. Edmond Bautista (SF North Coordinator)' },
+                { value: 'Bro. Edward Ricafort', label: 'Bro. Edward Ricafort' },
+                { value: 'Bro. Daniel Encarnacion', label: 'Bro. Daniel Encarnacion' },
+                { value: 'Sis. Cecilia Cristobal', label: 'Sis. Cecilia Cristobal' },
+                { value: 'Bro. Arnel Aldana', label: 'Bro. Arnel Aldana' },
+                { value: 'Bro. Renato Reg', label: 'Bro. Renato Reg' },
+                { value: 'Bro. Joel Salgado', label: 'Bro. Joel Salgado' }
+            ],
+            'SF East': [
+                { value: 'Bro. Dalbert Lopez', label: 'Bro. Dalbert Lopez (Coordinator)' },
+                { value: 'Bro. Dave Lopez', label: 'Bro. Dave Lopez' },
+                { value: 'Bro. Arthur King', label: 'Bro. Arthur King' },
+                { value: 'Bro. Julius Palma', label: 'Bro. Julius Palma' }
+            ],
+            'SF South': [
+                { value: 'Bro. Romy Umipig', label: 'Bro. Romy Umipig (Coordinator)' },
+                { value: 'Bro. Jeffrey Policarpio', label: 'Bro. Jeffrey Policarpio' },
+                { value: 'Bro. Germelson Ramos', label: 'Bro. Germelson Ramos' },
+                { value: 'Bro. Emil Morales', label: 'Bro. Emil Morales' },
+                { value: 'Bro. EJ Josef', label: 'Bro. EJ Josef' },
+                { value: 'Sis. Maricel Peñalosa', label: 'Sis. Maricel Peñalosa' }
+            ],
+            'SF North': [
+                { value: 'Bro. Edmond Bautista', label: 'Bro. Edmond Bautista (Coordinator)' },
+                { value: 'Bro. Edward Ricafort', label: 'Bro. Edward Ricafort' },
+                { value: 'Bro. Daniel Encarnacion', label: 'Bro. Daniel Encarnacion' },
+                { value: 'Sis. Cecilia Cristobal', label: 'Sis. Cecilia Cristobal' },
+                { value: 'Bro. Arnel Aldana', label: 'Bro. Arnel Aldana' },
+                { value: 'Bro. Renato Reg', label: 'Bro. Renato Reg' },
+                { value: 'Bro. Joel Salgado', label: 'Bro. Joel Salgado' }
+            ]
+        };
+
+        function filterOperators() {
+            const locale = document.getElementById('eventType').value;
+            const container = document.getElementById('operatorsDropdown');
+
+            if (!locale) {
+                container.innerHTML = '<p style="text-align: center; color: #999;">Please select a locale first</p>';
+                container.style.display = 'flex';
+                document.getElementById('selectedOperatorsBox').style.display = 'none';
+                return;
+            }
+
+            const operators = teamData[locale] || [];
+
+            if (operators.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999;">No operators available</p>';
+                container.style.display = 'flex';
+                document.getElementById('selectedOperatorsBox').style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            operators.forEach(op => {
+                html += `
+                    <label style="display: flex; align-items: center; gap: 8px; margin-bottom: 0; font-weight: normal; cursor: pointer;">
+                        <input type="checkbox" name="operator" value="${op.value}" onchange="updateSelectedOperators()" style="width: auto;">
+                        <span>${op.label}</span>
+                    </label>
+                `;
+            });
+
+            container.innerHTML = html;
+            container.style.display = 'flex';
+            updateSelectedOperators();
+        }
+
+        function updateSelectedOperators() {
+            const checkboxes = document.querySelectorAll('input[name="operator"]:checked');
+            const selectedBox = document.getElementById('selectedOperatorsBox');
+            const selectedList = document.getElementById('selectedOperatorsList');
+            const dropdown = document.getElementById('operatorsDropdown');
+
+            if (checkboxes.length === 0) {
+                selectedBox.style.display = 'none';
+                dropdown.style.display = 'flex';
+            } else {
+                selectedBox.style.display = 'block';
+                dropdown.style.display = 'none';
+
+                let html = '';
+                checkboxes.forEach(cb => {
+                    html += `
+                        <div style="background: white; padding: 8px 12px; border-radius: 6px; color: #1e40af; border-left: 3px solid #fbbf24; display: flex; justify-content: space-between; align-items: center;">
+                            <span>${cb.value}</span>
+                            <button type="button" onclick="removeOperator('${cb.value.replace(/'/g, "\\'")}');" style="background: #dc3545; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">Remove</button>
+                        </div>
+                    `;
+                });
+                selectedList.innerHTML = html;
+            }
+        }
+
+        function showOperatorsDropdown() {
+            const dropdown = document.getElementById('operatorsDropdown');
+            dropdown.style.display = 'flex';
+        }
+
+        function removeOperator(operatorValue) {
+            const checkboxes = document.querySelectorAll('input[name="operator"]');
+            checkboxes.forEach(checkbox => {
+                if (checkbox.value === operatorValue) {
+                    checkbox.checked = false;
+                }
+            });
+            updateSelectedOperators();
+        }
+
+        function gregorianToHebrew(gregorianDate) {
+            const year = gregorianDate.getFullYear();
+            const month = gregorianDate.getMonth() + 1;
+            const day = gregorianDate.getDate();
+
+            let a = Math.floor((14 - month) / 12);
+            let y = year + 4800 - a;
+            let m = month + 12 * a - 3;
+            let jdn = day + Math.floor((153 * m + 2) / 5) + 365 * y +
+                Math.floor(y / 4) - Math.floor(y / 100) +
+                Math.floor(y / 400) - 32045;
+
+            let hebrewJdn = jdn - 347997;
+            let hebrewYear = Math.floor((hebrewJdn * 98496) / 35975351) + 1;
+
+            while (getHebrewYearStart(hebrewYear + 1) <= jdn) {
+                hebrewYear++;
+            }
+
+            let yearStart = getHebrewYearStart(hebrewYear);
+            let dayOfYear = jdn - yearStart + 1;
+
+            let hebrewMonth = 1;
+            let daysInMonth = 30;
+            let accumDays = 0;
+
+            const monthLengths = [30, 29, 30, 29, 30, 29, 30, 29, 30, 29, 30, 29];
+
+            for (let i = 0; i < 12; i++) {
+                if (dayOfYear <= accumDays + monthLengths[i]) {
+                    hebrewMonth = i + 1;
+                    daysInMonth = dayOfYear - accumDays;
+                    break;
+                }
+                accumDays += monthLengths[i];
+            }
+
+            return {
+                year: hebrewYear,
+                month: hebrewMonth - 1,
+                day: daysInMonth
+            };
+        }
+
+        function getHebrewYearStart(year) {
+            let months = Math.floor((year - 1) * 235 / 19);
+            let parts = 204 + 793 * (months % 1080);
+            let hours = 5 + 12 * months + 793 * Math.floor(months / 1080) +
+                Math.floor(parts / 1080);
+            let day = 1 + 29 * months + Math.floor(hours / 24);
+            return day + 347997;
+        }
+
+        function switchToRoman() {
+            calendarType = 'gregorian';
+            document.getElementById('romanBtn').classList.add('active');
+            document.getElementById('hebrewBtn').classList.remove('active');
+            renderCalendar();
+        }
+
+        function switchToHebrew() {
+            calendarType = 'hebrew';
+            document.getElementById('hebrewBtn').classList.add('active');
+            document.getElementById('romanBtn').classList.remove('active');
+            renderCalendar();
+        }
+
+        function showCalendar() {
+            localStorage.setItem('activePage', 'calendar');
+            document.getElementById('calendarPage').classList.add('active');
+            document.getElementById('servicesPage').classList.remove('active');
+            document.getElementById('teamPage').classList.remove('active');
+            document.getElementById('pageTitle').textContent = 'MCGI Production';
+
+            // Update button states
+            updateNavButtons('calendar');
+        }
+
+        function showServices() {
+            localStorage.setItem('activePage', 'services');
+            document.getElementById('calendarPage').classList.remove('active');
+            document.getElementById('servicesPage').classList.add('active');
+            document.getElementById('teamPage').classList.remove('active');
+            document.getElementById('pageTitle').textContent = 'MCGI Services';
+
+            // Update button states
+            updateNavButtons('services');
+        }
+
+        function showTeam() {
+            localStorage.setItem('activePage', 'team');
+            document.getElementById('calendarPage').classList.remove('active');
+            document.getElementById('servicesPage').classList.remove('active');
+            document.getElementById('teamPage').classList.add('active');
+            document.getElementById('pageTitle').textContent = 'Production Team';
+
+            // Update button states
+            updateNavButtons('team');
+        }
+
+        function updateNavButtons(activePage) {
+            // Remove active class from all buttons
+            const allButtons = document.querySelectorAll('.nav-btn');
+            allButtons.forEach(btn => btn.classList.remove('active'));
+
+            // Add active class to current page buttons
+            if (activePage === 'calendar') {
+                document.getElementById('calendarNavBtn')?.classList.add('active');
+                document.getElementById('calendarNavBtn2')?.classList.add('active');
+                document.getElementById('calendarNavBtn3')?.classList.add('active');
+            } else if (activePage === 'services') {
+                document.getElementById('servicesNavBtn')?.classList.add('active');
+                document.getElementById('servicesNavBtn2')?.classList.add('active');
+                document.getElementById('servicesNavBtn3')?.classList.add('active');
+            } else if (activePage === 'team') {
+                document.getElementById('teamNavBtn')?.classList.add('active');
+                document.getElementById('teamNavBtn2')?.classList.add('active');
+                document.getElementById('teamNavBtn3')?.classList.add('active');
+            }
+        }
+
+        function loadEvents() {
+            try {
+                const stored = localStorage.getItem('mcgiEvents');
+                if (stored) {
+                    events = JSON.parse(stored);
+                    Object.keys(events).forEach(date => {
+                        events[date].forEach(event => {
+                            if (event.time && event.time.includes(':') && !event.time.includes('AM') && !event.time.includes('PM')) {
+                                event.time = convertTo12Hour(event.time);
+                            }
+                        });
+                    });
+                    saveEvents();
+                }
+            } catch (e) {
+                console.error('Error loading events:', e);
+                events = {};
+            }
+        }
+
+        function saveEvents() {
+            try {
+                localStorage.setItem('mcgiEvents', JSON.stringify(events));
+            } catch (e) {
+                console.error('Error saving events:', e);
+            }
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            if (calendarType === 'gregorian') {
+                document.getElementById('currentMonth').textContent =
+                    currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            } else {
+                const hebrewDate = gregorianToHebrew(currentDate);
+                document.getElementById('currentMonth').textContent =
+                    `${hebrewMonths[hebrewDate.month]} ${hebrewDate.year}`;
+            }
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const daysInPrev = new Date(year, month, 0).getDate();
+
+            const cal = document.getElementById('calendarDays');
+            cal.innerHTML = '';
+
+            const today = new Date();
+            const isThisMonth = today.getMonth() === month && today.getFullYear() === year;
+
+            for (let i = firstDay - 1; i >= 0; i--) {
+                cal.appendChild(createDay(daysInPrev - i, true, year, month - 1));
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = isThisMonth && today.getDate() === day;
+                cal.appendChild(createDay(day, false, year, month, isToday));
+            }
+
+            const remaining = 35 - cal.children.length;
+            if (remaining > 0) {
+                for (let day = 1; day <= remaining; day++) {
+                    cal.appendChild(createDay(day, true, year, month + 1));
+                }
+            }
+        }
+
+        function createDay(day, other, year, month, today = false) {
+            const el = document.createElement('div');
+            el.className = 'day';
+            if (other) el.classList.add('other-month');
+            if (today) el.classList.add('today');
+
+            let displayDay = day;
+
+            if (calendarType === 'hebrew' && !other) {
+                const date = new Date(year, month, day);
+                const hebrewDate = gregorianToHebrew(date);
+                displayDay = hebrewDate.day;
+            }
+
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+            if (!other && holidays[dateStr] && holidays[dateStr].country === 'MCGI') {
+                el.classList.add('spbb-day');
+            }
+
+            el.innerHTML = `<div class="day-number">${displayDay}</div>`;
+
+            if (!other && holidays[dateStr] && calendarType === 'gregorian') {
+                const holidayEl = document.createElement('div');
+                if (holidays[dateStr].country === 'MCGI') {
+                    holidayEl.className = 'spbb-marker';
+                } else {
+                    holidayEl.className = 'holiday-marker';
+                }
+                holidayEl.textContent = holidays[dateStr].name;
+                holidayEl.title = holidays[dateStr].name;
+                el.appendChild(holidayEl);
+            }
+
+            if (!other) {
+                const dateEvents = events[dateStr];
+
+                if (dateEvents && Array.isArray(dateEvents) && dateEvents.length > 0) {
+                    const eventsList = document.createElement('div');
+                    eventsList.className = 'event-list-container';
+                    dateEvents.forEach((evt, idx) => {
+                        const badge = document.createElement('div');
+                        badge.className = 'event-badge';
+                        badge.textContent = `${evt.title} - ${evt.type}`;
+                        badge.title = `${evt.title} at ${evt.time}\n${evt.type}`;
+                        eventsList.appendChild(badge);
+                    });
+                    el.appendChild(eventsList);
+                }
+            }
+
+            if (!other) {
+                el.onclick = () => viewDay(dateStr);
+            } else {
+                // For other month dates, navigate to that month when clicked
+                el.onclick = () => {
+                    const clickedDate = new Date(year, month, day);
+                    const cal = document.getElementById('calendarDays');
+
+                    // Determine direction of transition
+                    if (clickedDate < currentDate) {
+                        // Going to previous month
+                        cal.style.opacity = '0';
+                        cal.style.transform = 'translateX(20px)';
+                    } else {
+                        // Going to next month
+                        cal.style.opacity = '0';
+                        cal.style.transform = 'translateX(-20px)';
+                    }
+
+                    setTimeout(() => {
+                        currentDate = new Date(year, month, 15); // Set to middle of target month
+                        renderCalendar();
+
+                        setTimeout(() => {
+                            cal.style.opacity = '1';
+                            cal.style.transform = 'translateX(0)';
+                        }, 50);
+                    }, 300);
+                };
+            }
+
+            return el;
+        }
+
+        function prevMonth() {
+            const monthText = document.getElementById('currentMonth');
+            const cal = document.getElementById('calendarDays');
+
+            // Slide out current month (down with blur)
+            monthText.classList.add('slide-out-right');
+
+            // Calendar fades and slides
+            cal.style.opacity = '0';
+            cal.style.transform = 'translateX(20px)';
+
+            setTimeout(() => {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+
+                // Remove slide-out class and add slide-in
+                monthText.classList.remove('slide-out-right');
+                monthText.classList.add('slide-in-right');
+
+                setTimeout(() => {
+                    cal.style.opacity = '1';
+                    cal.style.transform = 'translateX(0)';
+
+                    // Clean up animation classes
+                    setTimeout(() => {
+                        monthText.classList.remove('slide-in-right');
+                    }, 500);
+                }, 50);
+            }, 250);
+        }
+
+        function nextMonth() {
+            const monthText = document.getElementById('currentMonth');
+            const cal = document.getElementById('calendarDays');
+
+            // Slide out current month (down with blur)
+            monthText.classList.add('slide-out-left');
+
+            // Calendar fades and slides
+            cal.style.opacity = '0';
+            cal.style.transform = 'translateX(-20px)';
+
+            setTimeout(() => {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+
+                // Remove slide-out class and add slide-in
+                monthText.classList.remove('slide-out-left');
+                monthText.classList.add('slide-in-left');
+
+                setTimeout(() => {
+                    cal.style.opacity = '1';
+                    cal.style.transform = 'translateX(0)';
+
+                    // Clean up animation classes
+                    setTimeout(() => {
+                        monthText.classList.remove('slide-in-left');
+                    }, 500);
+                }, 50);
+            }, 250);
+        }
+
+        function openAddEvent() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = 'Add Event';
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventDate').valueAsDate = new Date();
+
+            document.getElementById('operatorsDropdown').style.display = 'flex';
+            document.getElementById('operatorsDropdown').innerHTML = '<p style="text-align: center; color: #999;">Please select a locale first</p>';
+            document.getElementById('selectedOperatorsBox').style.display = 'none';
+
+            document.getElementById('eventModal').classList.add('active');
+        }
+
+        function closeEvent() {
+            document.getElementById('eventModal').classList.remove('active');
+        }
+
+        function closeView() {
+            document.getElementById('viewModal').classList.remove('active');
+        }
+
+        function viewDay(date) {
+            window.currentViewDate = date;
+            const dayEvents = events[date] || [];
+            const container = document.getElementById('eventList');
+
+            let content = '';
+
+            // Add "Add Event" button at the top
+            content += `
+                <div style="margin-bottom: 20px; text-align: center;">
+                    <button onclick="addEventToDate('${date}')" style="background: #fbbf24; color: #1e40af; border: 2px solid #f59e0b; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: bold; transition: all 0.3s;">
+                        + Add Event to This Date
+                    </button>
+                </div>
+            `;
+
+            if (holidays[date]) {
+                const bgColor = holidays[date].country === 'MCGI' ? '#dbeafe' : '#fef3c7';
+                const borderColor = holidays[date].country === 'MCGI' ? '#3b82f6' : '#f59e0b';
+                const textColor = holidays[date].country === 'MCGI' ? '#1e40af' : '#92400e';
+                const labelColor = holidays[date].country === 'MCGI' ? '#1e3a8a' : '#854d0e';
+                const countryLabel = holidays[date].country === 'MCGI' ? 'MCGI SPBB' :
+                    holidays[date].country === 'US' ? 'United States' : 'Philippines';
+
+                content += `<div style="background: ${bgColor}; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid ${borderColor};">
+                    <h4 style="color: ${textColor}; margin-bottom: 5px;">${holidays[date].country === 'MCGI' ? 'Special Thanksgiving' : 'Holiday'}</h4>
+                    <p style="color: ${labelColor}; font-weight: bold;">${holidays[date].name}</p>
+                    <p style="color: ${textColor}; font-size: 0.9em;">${countryLabel}</p>
+                </div>`;
+            }
+
+            if (dayEvents.length === 0 && !holidays[date]) {
+                content += '<p style="text-align: center; color: #999; padding: 20px;">No events for this day</p>';
+            } else if (dayEvents.length > 0) {
+                dayEvents.forEach((e, i) => {
+                    const eventId = `event-${i}`;
+                    content += `
+                        <div class="event-item" id="${eventId}">
+                            <h4>${e.title}</h4>
+                            <p>📍 ${e.type}</p>
+                            <p>⏰ ${e.time}</p>
+                            <p>👥 ${e.team || 'No operators assigned'}</p>
+                            ${e.notes ? `<p>📝 ${e.notes}</p>` : ''}
+                            <div class="btn-group" style="margin-top: 10px;">
+                                <button class="btn btn-primary" onclick="editEvent('${date}', ${i})">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteEventNow('${date}', ${i})">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = content;
+
+            document.getElementById('viewModal').classList.add('active');
+        }
+
+        function deleteEventNow(date, idx) {
+            console.log('Delete button clicked - showing confirmation');
+            deleteTarget = { date: date, idx: idx };
+            document.getElementById('deleteConfirmModal').classList.add('active');
+        }
+
+        function closeDeleteConfirm() {
+            document.getElementById('deleteConfirmModal').classList.remove('active');
+            deleteTarget = null;
+        }
+
+        function confirmDelete() {
+            if (!deleteTarget) {
+                alert('Error: No event selected for deletion');
+                return;
+            }
+
+            const date = deleteTarget.date;
+            const idx = deleteTarget.idx;
+
+            console.log('=== CONFIRMING DELETE ===');
+            console.log('Date:', date);
+            console.log('Index:', idx);
+            console.log('Current events:', JSON.stringify(events));
+
+            // Validate that the date and event exist
+            if (!events[date]) {
+                console.error('No events for date:', date);
+                alert('Error: No events found for this date');
+                closeDeleteConfirm();
+                return;
+            }
+
+            if (typeof events[date][idx] === 'undefined') {
+                console.error('No event at index:', idx);
+                alert('Error: Event not found at index ' + idx);
+                closeDeleteConfirm();
+                return;
+            }
+
+            console.log('Event to delete:', JSON.stringify(events[date][idx]));
+
+            // Remove the event
+            events[date].splice(idx, 1);
+            console.log('After splice, events[date]:', JSON.stringify(events[date]));
+
+            // If no more events on this date, remove the date key
+            if (events[date].length === 0) {
+                delete events[date];
+                console.log('Deleted date key - no more events');
+            }
+
+            // Save to localStorage
+            try {
+                localStorage.setItem('mcgiEvents', JSON.stringify(events));
+                console.log('Saved to localStorage successfully');
+            } catch (e) {
+                console.error('Error saving:', e);
+                alert('Error saving changes');
+                closeDeleteConfirm();
+                return;
+            }
+
+            console.log('Final events:', JSON.stringify(events));
+            console.log('=== DELETE COMPLETE ===');
+
+            // Close confirmation modal
+            closeDeleteConfirm();
+
+            // Re-render calendar
+            renderCalendar();
+
+            // Refresh the modal view or close it if no more events
+            if (events[date] && events[date].length > 0) {
+                console.log('Refreshing modal view with remaining events');
+                viewDay(date);
+            } else {
+                console.log('Closing view modal - no more events for this date');
+                closeView();
+            }
+
+            // Clear delete target
+            deleteTarget = null;
+        }
+
+        // Add this helper function to ensure deleteEventNow is available globally
+        window.deleteEventNow = deleteEventNow;
+        window.closeDeleteConfirm = closeDeleteConfirm;
+        window.confirmDelete = confirmDelete;
+
+        function addEventToDate(date) {
+            closeView();
+            editingId = null;
+            document.getElementById('modalTitle').textContent = 'Add Event';
+            document.getElementById('eventForm').reset();
+            document.getElementById('eventDate').value = date;
+
+            document.getElementById('operatorsDropdown').style.display = 'flex';
+            document.getElementById('operatorsDropdown').innerHTML = '<p style="text-align: center; color: #999;">Please select a locale first</p>';
+            document.getElementById('selectedOperatorsBox').style.display = 'none';
+
+            document.getElementById('eventModal').classList.add('active');
+        }
+
+        function editEvent(date, idx) {
+            closeView();
+            const e = events[date][idx];
+            editingId = { date, idx };
+
+            document.getElementById('modalTitle').textContent = 'Edit Event';
+            document.getElementById('eventTitle').value = e.title;
+            updateCategoryOptions(); // Populate options based on title
+            document.getElementById('eventCategory').value = e.category || ''; // Set value
+            document.getElementById('eventDate').value = date;
+            document.getElementById('eventTime').value = e.time;
+            document.getElementById('eventType').value = e.type;
+            document.getElementById('eventNotes').value = e.notes || '';
+
+            filterOperators();
+
+            setTimeout(() => {
+                const teamMembers = e.team ? e.team.split(', ') : [];
+                const checkboxes = document.querySelectorAll('input[name="operator"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = teamMembers.includes(checkbox.value);
+                });
+                updateSelectedOperators();
+            }, 100);
+
+            document.getElementById('eventModal').classList.add('active');
+        }
+
+        function saveEvent() {
+            const serviceTitle = document.getElementById('eventTitle').value;
+            const category = document.getElementById('eventCategory').value;
+            const date = document.getElementById('eventDate').value;
+            const time = document.getElementById('eventTime').value;
+            const locale = document.getElementById('eventType').value;
+            const notes = document.getElementById('eventNotes').value;
+
+            if (!serviceTitle) {
+                alert('Please select a Service');
+                return;
+            }
+            if (!category) {
+                alert('Please select a Category/Option');
+                return;
+            }
+            if (!date) {
+                alert('Please select a Date');
+                return;
+            }
+            if (!time) {
+                alert('Please select a Time');
+                return;
+            }
+            if (!locale) {
+                alert('Please select a Locale');
+                return;
+            }
+
+            const checkboxes = document.querySelectorAll('input[name="operator"]:checked');
+            const selectedOperators = Array.from(checkboxes).map(cb => cb.value);
+
+            const time12hr = convertTo12Hour(time);
+
+            const data = {
+                title: serviceTitle,
+                category: category,
+                time: time12hr,
+                type: locale,
+                team: selectedOperators.join(', '),
+                notes: notes
+            };
+
+            if (editingId) {
+                events[editingId.date].splice(editingId.idx, 1);
+                if (events[editingId.date].length === 0) delete events[editingId.date];
+                editingId = null;
+            }
+
+            if (!events[date]) events[date] = [];
+            events[date].push(data);
+            events[date].sort((a, b) => a.time.localeCompare(b.time));
+
+            saveEvents();
+            closeEvent();
+            renderCalendar();
+
+            alert('Event saved successfully!');
+        }
+
+        function convertTo12Hour(time24) {
+            const [hours, minutes] = time24.split(':');
+            let hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            hour = hour % 12 || 12;
+            return `${hour}:${minutes} ${ampm}`;
+        }
+
+        function clearAllEvents() {
+            if (confirm('Are you sure you want to delete ALL events? This cannot be undone!')) {
+                events = {};
+                localStorage.removeItem('mcgiEvents');
+                renderCalendar();
+                alert('All events have been deleted!');
+            }
+        }
+
+        // ---------------------------------------------------------
+        // SERVICES PAGE LOGIC
+        // ---------------------------------------------------------
+
+        // servicesConfig moved to top of script
+        // logic below uses global servicesConfig
+
+        function updateCategoryOptions() {
+            const serviceName = document.getElementById('eventTitle').value;
+            const categorySelect = document.getElementById('eventCategory');
+            categorySelect.innerHTML = '<option value="">Select option...</option>';
+
+            if (!serviceName) return;
+
+            const service = servicesConfig.find(s => s.name === serviceName);
+            if (service) {
+                service.options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.textContent = opt;
+                    categorySelect.appendChild(option);
+                });
+            }
+        }
+
+        // Expose
+        window.updateCategoryOptions = updateCategoryOptions;
+
+        function renderServices() {
+            const container = document.getElementById('servicesList');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let currentRow = null;
+
+            servicesConfig.forEach((service, index) => {
+                // Create new row every 3 items
+                if (index % 3 === 0) {
+                    currentRow = document.createElement('div');
+                    currentRow.className = 'service-row';
+                    container.appendChild(currentRow);
+                }
+
+                const btn = document.createElement('button');
+                btn.className = 'service-card';
+                btn.textContent = service.name;
+                btn.onclick = () => openServiceDetails(service);
+
+                currentRow.appendChild(btn);
+            });
+        }
+
+        function openServiceDetails(service) {
+            // Hide List, Show Details
+            document.getElementById('servicesList').style.display = 'none';
+            document.getElementById('serviceDetails').style.display = 'flex'; // It's a flex col in CSS? No, container is flex col.
+            // Actually services-container is flex-col. So we keep it flex.
+
+            document.getElementById('selectedServiceTitle').textContent = service.name;
+            document.getElementById('personnelAssignmentArea').style.display = 'none';
+
+            const grid = document.getElementById('serviceOptionsGrid');
+            grid.innerHTML = '';
+
+            service.options.forEach(opt => {
+                const btn = document.createElement('button');
+                // Reuse service-card style but smaller or adapted? User said "visual style should follow".
+                // We'll reuse service-card class for consistency but add a modifier if needed.
+                // Or just inline style modification.
+                btn.className = 'service-card';
+                // Adjust size for grid? service-card is fixed 320px. 
+                // Maybe smaller for options?
+                btn.style.width = '200px';
+                btn.style.height = '50px';
+                btn.style.fontSize = '1em';
+                btn.textContent = opt;
+                btn.onclick = () => handleOptionClick(service.name, opt);
+                grid.appendChild(btn);
+            });
+        }
+
+        function backToServices() {
+            document.getElementById('servicesList').style.display = 'flex'; // Restore list
+            document.getElementById('serviceDetails').style.display = 'none';
+        }
+
+        function handleOptionClick(serviceName, optionName) {
+            // Show Level 3 (Personnel Placeholder -> Actual Data)
+            const area = document.getElementById('personnelAssignmentArea');
+            const header = document.getElementById('assignmentHeader');
+
+            area.style.display = 'block';
+            area.classList.remove('fadeInUp'); // Reset animation
+            void area.offsetWidth; // Trigger reflow
+            area.style.animation = 'fadeInUp 0.3s ease-out';
+
+            header.innerHTML = `Upcoming Schedules: <span style="color: #f59e0b;">${serviceName}</span>`;
+
+            // 1. Fetch and Filter Events
+            const upcomingEvents = [];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            Object.keys(events).forEach(dateStr => {
+                const eventDate = new Date(dateStr);
+                if (eventDate >= today) {
+                    events[dateStr].forEach(evt => {
+                        // Match precise category OR show partial match if event has no category (legacy data)
+                        if (evt.title === serviceName && (evt.category === optionName || !evt.category)) {
+                            upcomingEvents.push({
+                                date: dateStr,
+                                ...evt
+                            });
+                        }
+                    });
+                }
+            });
+
+            // 2. Sort by Date
+            upcomingEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            // 3. Render
+            const container = document.createElement('div');
+            container.style.marginTop = '20px';
+
+            if (upcomingEvents.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #666; font-style: italic;">No upcoming schedules found for ${serviceName} - ${optionName}.</p>`;
+            } else {
+                upcomingEvents.forEach(evt => {
+                    const dateObj = new Date(evt.date);
+                    const formattedDate = dateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+
+                    const card = document.createElement('div');
+                    card.style.background = 'white';
+                    card.style.borderRadius = '8px';
+                    card.style.padding = '15px';
+                    card.style.marginBottom = '15px';
+                    card.style.borderLeft = '4px solid #f59e0b';
+                    card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+
+                    let teamHtml = '';
+                    if (evt.team) {
+                        teamHtml = evt.team.split(', ').map(member =>
+                            `<span style="display: inline-block; background: #eff6ff; color: #1e40af; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; margin: 2px;">${member}</span>`
+                        ).join('');
+                    } else {
+                        teamHtml = '<span style="color: #999; font-size: 0.9em;">No personnel assigned</span>';
+                    }
+
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <div>
+                                <div style="font-weight: bold; color: #1e3a8a; font-size: 1.1em;">${formattedDate}</div>
+                                <div style="color: #666; font-size: 0.9em;">⏰ ${evt.time}</div>
+                            </div>
+                            <div style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold;">
+                                ${evt.type}
+                            </div>
+                        </div>
+                        <div style="border-top: 1px solid #eee; padding-top: 10px;">
+                            <div style="font-size: 0.85em; color: #666; margin-bottom: 5px; font-weight: bold;">ASSIGNED TEAM:</div>
+                            <div style="display: flex; flex-wrap: wrap;">${teamHtml}</div>
+                        </div>
+                        ${evt.notes ? `<div style="margin-top: 8px; font-size: 0.9em; color: #555; background: #f9fafb; padding: 8px; border-radius: 4px;">📝 ${evt.notes}</div>` : ''}
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            area.innerHTML = '';
+            area.appendChild(header);
+            area.appendChild(container);
+
+            // Scroll to bottom
+            setTimeout(() => {
+                document.getElementById('serviceDetails').scrollTo({ top: document.getElementById('serviceDetails').scrollHeight, behavior: 'smooth' });
+            }, 100);
+        }
+
+        // Expose functions globally
+        window.backToServices = backToServices;
+
+        document.getElementById('eventForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            saveEvent();
+        });
+
+        loadEvents();
+        renderServices(); // INITIAL RENDER
+        renderCalendar();
+
+        // Restore active page from storage
+        const savedPage = localStorage.getItem('activePage');
+        if (savedPage === 'services') {
+            showServices();
+        } else if (savedPage === 'team') {
+            showTeam();
+        }
+        // Default is calendar (already shown by static HTML/CSS initial state or showCalendar call if needed, but showServices/showTeam handle hiding it)
+        // If savedPage is null or 'calendar', we do nothing as Calendar is default.
+        else {
+            showCalendar();
+        }
+    </script>
+</body>
+
+</html>

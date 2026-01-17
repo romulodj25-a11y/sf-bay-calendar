@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCGI Production Calendar</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Calendar Section -->
+        <main class="calendar-section">
+            <header class="calendar-header">
+                <div class="month-nav">
+                    <button id="prevMonth" class="nav-btn" aria-label="Previous Month">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M15 18l-6-6 6-6" />
+                        </svg>
+                    </button>
+
+                    <div class="month-display-container">
+                        <h1 id="monthDisplay">January 2026</h1>
+                        <button id="calendarToggle" class="toggle-btn" aria-label="Toggle Hebrew/Gregorian">
+                            <span class="toggle-label active">GR</span>
+                            <span class="toggle-label">HB</span>
+                        </button>
+                    </div>
+
+                    <button id="nextMonth" class="nav-btn" aria-label="Next Month">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="calendar-grid-header">
+                <div>Sun</div>
+                <div>Mon</div>
+                <div>Tue</div>
+                <div>Wed</div>
+                <div>Thu</div>
+                <div>Fri</div>
+                <div>Sat</div>
+            </div>
+
+            <div id="calendarGrid" class="calendar-grid">
+                <!-- Days will be injected here via JS -->
+            </div>
+        </main>
+
+        <!-- Services / Schedule Section -->
+        <aside class="services-panel">
+            <h2>Services Schedule</h2>
+            <div class="schedule-list">
+                <div class="schedule-item">
+                    <div class="time">04:30 AM</div>
+                    <div class="event">
+                        <span class="tag live">LIVE</span>
+                        <h3>Morning Prayer</h3>
+                    </div>
+                </div>
+                <div class="schedule-item">
+                    <div class="time">06:00 PM</div>
+                    <div class="event">
+                        <span class="tag playback">REPLAY</span>
+                        <h3>Worship Service</h3>
+                    </div>
+                </div>
+                <!-- Dynamic content can go here -->
+            </div>
+        </aside>
+    </div>
+
+    <script src="EventModal.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
