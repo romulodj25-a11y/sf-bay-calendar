@@ -1341,42 +1341,61 @@
                 <div
                     style="background: linear-gradient(135deg, #1e40af 0%, #0369a1 100%); padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: center;">
                     <h3 style="color: white; margin-bottom: 5px;">SF BAY AREA COORDINATOR</h3>
-                    <p style="color: #fbbf24; font-size: 1.3em; font-weight: bold;">Bro. Peter Bongato</p>
+                    <p class="coordinator-link" onclick="showPersonnelSchedule('Bro. Peter Bongato')"
+                        style="color: #fbbf24; font-size: 1.3em; font-weight: bold; cursor: pointer;">Bro. Peter Bongato
+                    </p>
                 </div>
 
                 <div class="team-grid">
                     <div class="team-card">
                         <div class="team-header">SF EAST</div>
-                        <div class="coordinator">Bro. Dalbert Lopez</div>
+                        <div class="coordinator coordinator-link" onclick="showPersonnelSchedule('Bro. Dalbert Lopez')">
+                            Bro. Dalbert Lopez</div>
                         <div class="members-list">
-                            <div class="member">Bro. Dave Lopez</div>
-                            <div class="member">Bro. Arthur King</div>
-                            <div class="member">Bro. Julius Palma</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Dave Lopez')">Bro. Dave
+                                Lopez</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Arthur King')">Bro.
+                                Arthur King</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Julius Palma')">Bro.
+                                Julius Palma</div>
                         </div>
                     </div>
 
                     <div class="team-card">
                         <div class="team-header">SF SOUTH</div>
-                        <div class="coordinator">Bro. Romy Umipig</div>
+                        <div class="coordinator coordinator-link" onclick="showPersonnelSchedule('Bro. Romy Umipig')">
+                            Bro. Romy Umipig</div>
                         <div class="members-list">
-                            <div class="member">Bro. Jeffrey Policarpio</div>
-                            <div class="member">Bro. Germelson Ramos</div>
-                            <div class="member">Bro. Emil Morales</div>
-                            <div class="member">Bro. EJ Josef</div>
-                            <div class="member">Sis. Maricel Peñalosa</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Jeffrey Policarpio')">
+                                Bro. Jeffrey Policarpio</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Germelson Ramos')">Bro.
+                                Germelson Ramos</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Emil Morales')">Bro.
+                                Emil Morales</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. EJ Josef')">Bro. EJ
+                                Josef</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Sis. Maricel Peñalosa')">
+                                Sis. Maricel Peñalosa</div>
                         </div>
                     </div>
 
                     <div class="team-card">
                         <div class="team-header">SF NORTH</div>
-                        <div class="coordinator">Bro. Edmond Bautista</div>
+                        <div class="coordinator coordinator-link"
+                            onclick="showPersonnelSchedule('Bro. Edmond Bautista')">Bro. Edmond Bautista</div>
                         <div class="members-list">
-                            <div class="member">Bro. Edward Ricafort</div>
-                            <div class="member">Bro. Daniel Encarnacion</div>
-                            <div class="member">Sis. Cecilia Cristobal</div>
-                            <div class="member">Bro. Arnel Aldana</div>
-                            <div class="member">Bro. Renato Reg</div>
-                            <div class="member">Bro. Joel Salgado</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Edward Ricafort')">Bro.
+                                Edward Ricafort</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Daniel Encarnacion')">
+                                Bro. Daniel Encarnacion</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Sis. Cecilia Cristobal')">
+                                Sis. Cecilia Cristobal</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Arnel Aldana')">Bro.
+                                Arnel Aldana</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Renato Reg')">Bro.
+                                Renato Reg</div>
+                            <div class="member member-link" onclick="showPersonnelSchedule('Bro. Joel Salgado')">Bro.
+                                Joel Salgado</div>
                         </div>
                     </div>
                 </div>
@@ -1494,6 +1513,19 @@
                 /* Tiny text for events */
                 padding: 1px 2px;
             }
+        }
+
+        /* Added for Team Page Interaction */
+        .coordinator-link,
+        .member-link {
+            cursor: pointer;
+            transition: opacity 0.2s, text-decoration 0.2s;
+        }
+
+        .coordinator-link:hover,
+        .member-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
         }
     </style>
 
@@ -2172,97 +2204,11 @@
             // Update button states
             updateNavButtons('team');
 
-            // Render the team list
-            renderTeamPage();
+            // No dynamic render - static HTML is used
         }
 
-        function renderTeamPage() {
-            const container = document.getElementById('teamPage');
-
-            let listContainer = document.getElementById('teamListContainer');
-            if (!listContainer) {
-                listContainer = document.createElement('div');
-                listContainer.id = 'teamListContainer';
-                listContainer.style.padding = '20px';
-                listContainer.style.maxWidth = '1000px';
-                listContainer.style.margin = '0 auto';
-                container.appendChild(listContainer);
-            }
-
-            listContainer.innerHTML = '';
-
-            // Global Controls
-            const controls = document.createElement('div');
-            controls.style.marginBottom = '20px';
-            controls.style.textAlign = 'right';
-            controls.innerHTML = `
-                <button onclick="toggleAllTeamDetails(true)" style="background: #f3f4f6; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-right: 5px;">Expand All</button>
-                <button onclick="toggleAllTeamDetails(false)" style="background: #f3f4f6; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Collapse All</button>
-            `;
-            listContainer.appendChild(controls);
-
-            // Iterate teamData
-            Object.keys(teamData).forEach(groupName => {
-                if (groupName === 'SF Bay Area (All)') return;
-
-                const groupMembers = teamData[groupName];
-
-                // Use details/summary for collapsible sections
-                const details = document.createElement('details');
-                details.className = 'team-group-details'; // For global toggling
-                details.open = true; // Default open
-                details.style.marginBottom = '20px';
-                details.style.background = '#fff';
-                details.style.borderRadius = '8px';
-                details.style.border = '1px solid #e5e7eb';
-                details.style.boxShadow = '0 1px 2px rgba(0,0,0,0.05)';
-                details.style.overflow = 'hidden';
-
-                const summary = document.createElement('summary');
-                summary.style.cssText = 'font-size: 1.25em; font-weight: bold; color: #1e40af; cursor: pointer; padding: 15px; background: #f9fafb; outline: none; user-select: none;';
-                summary.textContent = groupName;
-
-                details.appendChild(summary);
-
-                const grid = document.createElement('div');
-                grid.style.display = 'grid';
-                grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
-                grid.style.gap = '15px';
-                grid.style.padding = '15px';
-                grid.style.borderTop = '1px solid #e5e7eb';
-
-                groupMembers.forEach(member => {
-                    const card = document.createElement('div');
-                    card.style.background = 'white';
-                    card.style.padding = '15px';
-                    card.style.borderRadius = '8px';
-                    card.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
-                    card.style.textAlign = 'center';
-                    card.style.border = '1px solid #eee';
-
-                    const safeName = member.value.replace(/'/g, "\\'");
-
-                    card.innerHTML = `
-                        <div style="font-weight: bold; color: #374151; margin-bottom: 5px;">${member.value}</div>
-                        <div style="font-size: 0.8em; color: #6b7280; margin-bottom: 10px;">${member.label.includes('(') ? member.label.match(/\((.*?)\)/)[1] : 'Member'}</div>
-                        <button onclick="showPersonnelSchedule('${safeName}')" style="background: #3b82f6; color: white; border: none; padding: 4px 12px; border-radius: 15px; font-size: 0.85em; cursor: pointer;">
-                            View Schedule
-                        </button>
-                    `;
-
-                    grid.appendChild(card);
-                });
-
-                details.appendChild(grid);
-                listContainer.appendChild(details);
-            });
-        }
-
-        function toggleAllTeamDetails(expand) {
-            document.querySelectorAll('.team-group-details').forEach(el => {
-                el.open = expand;
-            });
-        }
+        // renderTeamPage function removed
+        // toggleAllTeamDetails function removed
 
         function updateNavButtons(activePage) {
             // Remove active class from all buttons
