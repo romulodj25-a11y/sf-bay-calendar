@@ -1195,6 +1195,35 @@
             background-color: rgba(0, 0, 0, 0.2);
         }
     </style>
+    .team-page-container {
+    padding: 20px 40px 40px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    }
+
+    .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+    }
+
+    @media (max-width: 768px) {
+    .team-page-container {
+    padding: 20px 15px; /* Reduced for mobile */
+    }
+    .team-grid {
+    grid-template-columns: 1fr; /* Stack vertically on mobile */
+    }
+    .team-card {
+    /* Ensure card creates new stacking context and fits */
+    width: 100%;
+    }
+    /* Optional: Center member text on mobile if alignment looks off */
+    .member {
+    text-align: center;
+    }
+    }
+    </style>
 </head>
 
 <body>
@@ -1308,14 +1337,14 @@
                 <button class="nav-btn active" id="teamNavBtn3" onclick="showTeam()">Team</button>
             </div>
 
-            <div style="padding: 20px 40px 40px 40px; max-width: 1200px; margin: 0 auto;">
+            <div class="team-page-container">
                 <div
                     style="background: linear-gradient(135deg, #1e40af 0%, #0369a1 100%); padding: 20px; border-radius: 12px; margin-bottom: 30px; text-align: center;">
                     <h3 style="color: white; margin-bottom: 5px;">SF BAY AREA COORDINATOR</h3>
                     <p style="color: #fbbf24; font-size: 1.3em; font-weight: bold;">Bro. Peter Bongato</p>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;">
+                <div class="team-grid">
                     <div class="team-card">
                         <div class="team-header">SF EAST</div>
                         <div class="coordinator">Bro. Dalbert Lopez</div>
