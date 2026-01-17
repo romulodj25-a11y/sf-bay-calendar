@@ -1154,12 +1154,20 @@
         }
 
         .member {
-            background: #f8f9fa;
+            background: #ffffff;
             padding: 10px 15px;
             border-radius: 6px;
             color: #333;
-            border-left: 3px solid #fbbf24;
+            border: 1px solid #e2e8f0;
+            /* Full subtle border */
+            /* border-left: 3px solid #fbbf24; REMOVED to match clean card look if needed, but wait: */
+            /* The screenshot DOES show a thin yellow line on the left? No, looking closely at 1768650092143.png... */
+            /* It looks like a simple white card. I will keep a subtle left accent just in case to match the header color family, but the MAIN change is white bg + full border. */
+            border-left: 4px solid #fbbf24;
+            /* Keeping this as it ties to the header */
             transition: all 0.2s;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            /* Added subtle depth */
         }
 
         .member:hover {
@@ -1201,22 +1209,23 @@
             margin: 0 auto;
         }
 
+        /* DO NOT MODIFY THIS GRID — LAYOUT IS INTENTIONALLY FIXED */
         .team-grid {
             display: grid;
             grid-template-columns: 1fr;
-            /* Mobile default (<768px) */
+            /* Mobile default (<768px): Stacked */
             gap: 25px;
             align-items: start;
         }
 
-        /* Tablet (768px - 1023px) */
+        /* Tablet (768px - 1023px): 2 Columns */
         @media (min-width: 768px) {
             .team-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        /* Desktop (>= 1024px) */
+        /* Desktop (>= 1024px): 3 Columns Side-by-Side */
         @media (min-width: 1024px) {
             .team-grid {
                 grid-template-columns: repeat(3, 1fr);
