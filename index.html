@@ -1087,6 +1087,12 @@
             box-shadow: 0 5px 15px rgba(30, 64, 175, 0.1);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             animation: scaleIn 0.5s ease-out both;
+            display: flex;
+            /* Added for equal height internal layout */
+            flex-direction: column;
+            /* Stack content */
+            height: 100%;
+            /* Fill the grid cell */
         }
 
         .team-card:nth-child(1) {
@@ -1215,7 +1221,7 @@
             grid-template-columns: 1fr;
             /* Mobile default (<768px): Stacked */
             gap: 25px;
-            align-items: start;
+            align-items: stretch;
         }
 
         /* Tablet (768px - 1023px): 2 Columns */
@@ -3564,6 +3570,9 @@
         }
     </script>
 
+    <div style="text-align: center; color: #666; padding: 20px; font-size: 0.8em;">
+        &copy; 2026 MCGI Production | v2.5 Team Layout Fixed
+    </div>
 </body>
 
 </html>
